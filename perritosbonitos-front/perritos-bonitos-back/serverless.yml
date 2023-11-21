@@ -1,0 +1,86 @@
+service: perritos-bonitos-back
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: ejsm
+  profile: ittssna
+  environment:
+    Table: perritos-${self:custom.currentStage}
+    Storage: ittssna-nov2023-${self:custom.env}-assets
+  iam:
+    role:
+      statements: # permissions for all of your functions can be set here
+        - Effect: Allow
+          Action: # Gives permission to DynamoDB tables in a specific region
+            - dynamodb:DescribeTable
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - s3:Put*
+            - s3:List*
+            - s3:Get*
+          Resource: '*'
+
+custom:
+  env: ejsm
+  currentStage: ejsm
+
+resources:
+  - ${file(recursos/dynamodb.yml)}
+  - ${file(recursos/s3.yml)}
+
+
+functions:
+  hello-world:
+    name: hello-world-${self:custom.currentStage}
+    handler: index.handler
+    events:
+      - http:
+          path: /hello-world
+          method: get
+          cors: true
+  listPerritos:
+    name: listPerritos-${self:custom.currentStage}
+    handler: funciones/listPerritos.handler
+    events:
+      - http:
+          path: /perritos
+          method: get
+          cors: true
+  getPerrito:
+    name: getPerrito-${self:custom.currentStage}
+    handler: funciones/getPerrito.handler
+    events:
+      - http:
+          path: /perrito/{id}
+          method: get
+          cors: true
+  createPerrito:
+    name: createPerrito-${self:custom.currentStage}
+    handler: funciones/createPerrito.handler
+    events:
+      - http:
+          path: /perrito
+          method: post
+          cors: true
+  updatePerrito:
+    name: updatePerrito-${self:custom.currentStage}
+    handler: funciones/updatePerrito.handler
+    events:
+      - http:
+          path: /perrito/{id}
+          method: put
+          cors: true
+  deletePerrito:
+    name: deletePerrito-${self:custom.currentStage}
+    handler: funciones/deletePerrito.handler
+    events:
+      - http:
+          path: /perrito/{id}
+          method: delete
+          cors: true

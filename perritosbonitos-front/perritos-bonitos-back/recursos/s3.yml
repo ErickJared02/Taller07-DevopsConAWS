@@ -1,0 +1,30 @@
+Resources:
+  assetsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ittssna-nov2023-${self:custom.env}-assets
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: False
+        BlockPublicPolicy: False
+        IgnorePublicAcls: False
+        RestrictPublicBuckets: False
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+  assetsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn: assetsBucket
+    Properties:
+      Bucket:
+        Ref: assetsBucket
+      PolicyDocument:
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: "*"
+            Action:
+              - "s3:get*"
+            Resource:
+              - !Join ['',["arn:aws:s3:::",Ref: assetsBucket]]
+              - !Join ['',["arn:aws:s3:::",Ref: assetsBucket,/*]]
+      

@@ -1,0 +1,12 @@
+Resources:
+  perritos:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: perritos-${self:custom.currentStage}
+      AttributeDefinitions:
+        - AttributeName: name
+          AttributeType: S
+      KeySchema:
+        - AttributeName: name
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
